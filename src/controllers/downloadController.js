@@ -2,17 +2,16 @@ import { exec } from 'child_process';
 import ytdl from 'ytdl-core';
 import path from 'path';
 import fs from 'fs';
-// import { getVideoInfo } from '../services/youtubeService';
+
+const COOKIES_FILE_PATH = path.resolve('cookies.txt'); // Path to your cookies.txt file
 
 export async function downloadController(req, res) {
     try {
         const { url } = req.body;
 
-      
         if (!url) {
             return res.status(400).json({ error: 'YouTube URL is required' });
         }
-       
 
         const outputPath = path.resolve('output.mp4'); // Use absolute path for clarity
 
@@ -39,8 +38,8 @@ export async function downloadController(req, res) {
 
 function downloadVideoWithYT_DLP(url, outputPath) {
     return new Promise((resolve, reject) => {
-        // Command to download and merge video + audio into a single MP4 file
-        const command = `yt-dlp -v -f bestvideo+bestaudio --merge-output-format mp4 -o "${outputPath}" ${url}`;
+        // Command to download and merge video + audio into a single MP4 file, using cookies
+        const command = `yt-dlp -v -f bestvideo+bestaudio --merge-output-format mp4 --cookies "${COOKIES_FILE_PATH}" -o "${outputPath}" ${url}`;
         console.log('Executing command:', command);
 
         exec(command, (error, stdout, stderr) => {
